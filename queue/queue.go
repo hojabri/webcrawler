@@ -8,9 +8,9 @@ const chunkSize = 128
 
 // chunks are used to make a queue auto resizeable.
 type chunk struct {
-	items       [chunkSize]interface{} // list of queued items
-	first, last int                    // positions for the first and last item in this chunk
-	next        *chunk                 // pointer to the next chunk (if any)
+	items       [chunkSize]any // list of queued items
+	first, last int            // positions for the first and last item in this chunk
+	next        *chunk         // pointer to the next chunk (if any)
 }
 
 type Queue struct {
@@ -41,7 +41,7 @@ func (q *Queue) Len() (length int) {
 }
 
 // Add adds an item to the end of the queue
-func (q *Queue) Add(item interface{}) {
+func (q *Queue) Add(item any) {
 	// locking to make Queue thread-safe
 	q.lock.Lock()
 	defer q.lock.Unlock()
@@ -63,9 +63,9 @@ func (q *Queue) Add(item interface{}) {
 	q.count++
 }
 
-// Next Remove the item at the head of the queue and return it.
+// Pop Remove the item at the head of the queue and return it.
 // Returns nil when there are no items left in queue.
-func (q *Queue) Next() (item interface{}) {
+func (q *Queue) Pop() (item any) {
 	// locking to make Queue thread-safe
 	q.lock.Lock()
 	defer q.lock.Unlock()

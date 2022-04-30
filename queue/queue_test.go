@@ -12,11 +12,11 @@ func TestBasic(t *testing.T) {
 	require.Equal(t, 0, q.Len(), "new Queue should have 0 length")
 	q.Add(10)
 	require.Equal(t, 1, q.Len(), "length of Queue should be 1 after adding one item")
-	require.Equal(t, 10, q.Next().(int), "could not get correct value from queue")
+	require.Equal(t, 10, q.Pop().(int), "could not get correct value from queue")
 	require.Equal(t, 0, q.Len(), "Queue should have 0 item after getting the single item")
 	q.Add(11)
 	require.Equal(t, 1, q.Len(), "length of Queue should be 1 after adding one item")
-	require.Equal(t, 11, q.Next().(int), "could not get correct value from queue")
+	require.Equal(t, 11, q.Pop().(int), "could not get correct value from queue")
 	require.Equal(t, 0, q.Len(), "Queue should have 0 item after getting the single item")
 }
 
@@ -28,10 +28,10 @@ func TestAddLargeItems_Ints(t *testing.T) {
 	}
 	require.Equal(t, 1000000, q.Len(), "length of Queue should be 1 million")
 	for i := 0; i < 1000000; i++ {
-		item := q.Next()
+		item := q.Pop()
 		require.Equal(t, i, item.(int), "item is not correct")
 	}
-	require.Nilf(t, q.Next(), "should be nil")
+	require.Nilf(t, q.Pop(), "should be nil")
 }
 
 func TestAddLargeItems_Structs(t *testing.T) {
@@ -52,7 +52,7 @@ func TestAddLargeItems_Structs(t *testing.T) {
 	}
 	require.Equal(t, 1000000, q.Len(), "length of Queue should be 1 million")
 	for i := 0; i < 1000000; i++ {
-		q.Next()
+		q.Pop()
 	}
 	require.Equal(t, 0, q.Len(), "length of Queue should be 0")
 }
