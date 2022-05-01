@@ -43,6 +43,10 @@ func NewCrawler(log *zerolog.Logger) Crawler {
 	}
 }
 
+func (c *Crawler) Run(ctx context.Context, seedURL *url.URL, depth int, parallel int) {
+	go c.Crawl(ctx, seedURL, 0, 1)
+}
+
 func (c *Crawler) Crawl(ctx context.Context, seedURL *url.URL, depth int, parallel int) {
 	if parallel == 0 {
 		parallel = 1

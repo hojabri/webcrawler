@@ -6,6 +6,7 @@ import (
 	"net/url"
 	"os"
 	"os/signal"
+	"syscall"
 	"time"
 	"webcrawler/crawler"
 	"webcrawler/queue"
@@ -28,8 +29,9 @@ func main() {
 		log.Fatal().Err(err).Str("url", rawURL).Msg("failed to parse seed URL")
 	}
 
+	// getting os signals
 	signals := make(chan os.Signal, 1)
-	signal.Notify(signals, os.Interrupt)
+	signal.Notify(signals, os.Interrupt, syscall.SIGTERM)
 	ctx, cancel := context.WithCancel(context.Background())
 
 	go func() {
@@ -41,7 +43,9 @@ func main() {
 	defer func() {
 		log.Info().Str("time lapsed", time.Since(t1).String()).Int("unique page visited", len(c.VisitedList.Map())).Msg("crawling finished")
 	}()
-	go c.Crawl(ctx, seedURL, 0, 1)
+
+	// trigger crawling
+	c.Run(ctx, seedURL, 0, 1)
 
 	// read cloud pages
 	ticker := time.NewTicker(100 * time.Millisecond)
@@ -53,14 +57,12 @@ func main() {
 			ticker.Stop()
 			return
 		case <-ticker.C:
-			total = total + readPrintCrawledPages(&c.Crawled)
-			fmt.Printf("total links outer: %d\n", total)
+			readPrintCrawledPages(&c.Crawled)
 		}
 	}
 }
 
-func readPrintCrawledPages(c *queue.Queue) int {
-	total := 0
+func readPrintCrawledPages(c *queue.Queue) {
 	for {
 		item := c.Pop()
 		if item == nil {
@@ -71,14 +73,10 @@ func readPrintCrawledPages(c *queue.Queue) int {
 			fmt.Printf("page: %s\n", page.URL.String())
 			for link := range page.Links {
 				fmt.Printf("links: %s\n", link)
-				total++
 			}
 			for link := range page.Statics {
 				fmt.Printf("static: %s\n", link)
-				total++
 			}
 		}
 	}
-	fmt.Printf("total links: %d\n", total)
-	return total
 }
