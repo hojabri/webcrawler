@@ -20,13 +20,12 @@ type Queue struct {
 }
 
 // NewQueue creates a new and empty *fifo.Queue
-func NewQueue() (q *Queue) {
+func NewQueue() Queue {
 	initChunk := new(chunk)
-	q = &Queue{
+	return Queue{
 		head: initChunk,
 		tail: initChunk,
 	}
-	return q
 }
 
 // Len returns the number of items in the queue

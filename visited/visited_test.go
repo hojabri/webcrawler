@@ -1,4 +1,4 @@
-package seen
+package visited
 
 import (
 	"testing"
@@ -7,7 +7,7 @@ import (
 )
 
 func TestSeen(t *testing.T) {
-	seen := NewSeenList()
+	seen := NewVisitedList()
 
 	ok := seen.Exist("a")
 	require.False(t, ok, "should not exist")
