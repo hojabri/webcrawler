@@ -44,10 +44,10 @@ func NewCrawler(log *zerolog.Logger) Crawler {
 }
 
 func (c *Crawler) Run(ctx context.Context, seedURL *url.URL, depth int, parallel int) {
-	go c.Crawl(ctx, seedURL, 0, 1)
+	go c.crawl(ctx, seedURL, 0, 1)
 }
 
-func (c *Crawler) Crawl(ctx context.Context, seedURL *url.URL, depth int, parallel int) {
+func (c *Crawler) crawl(ctx context.Context, seedURL *url.URL, depth int, parallel int) {
 	if parallel == 0 {
 		parallel = 1
 	}
@@ -100,12 +100,12 @@ func (c *Crawler) worker(ctx context.Context, jobs <-chan url.URL) {
 			if !ok {
 				return
 			}
-			c.crawl(&job)
+			c.do(&job)
 		}
 	}
 }
 
-func (c *Crawler) crawl(seedURL *url.URL) {
+func (c *Crawler) do(seedURL *url.URL) {
 	defer atomic.AddInt64(&c.processing, -1)
 
 	page := Page{
@@ -174,7 +174,7 @@ func (c *Crawler) parse(page *Page, body io.ReadCloser) error {
 						}
 					}
 				}
-			case "img", "image", "script": // static tags
+			case "img", "image", "script", "embed", "source", "track", "audio", "input", "video": // static tags with src tags(https://www.w3schools.com/tags/att_src.asp)
 				for _, attr := range token.Attr {
 					if attr.Key == "src" {
 						relativeURL = attr.Val

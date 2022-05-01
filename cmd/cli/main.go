@@ -44,7 +44,7 @@ func main() {
 		log.Info().Str("time lapsed", time.Since(t1).String()).Int("unique page visited", len(c.VisitedList.Map())).Msg("crawling finished")
 	}()
 
-	// trigger crawling
+	// run crawling
 	c.Run(ctx, seedURL, 0, 1)
 
 	// read cloud pages
